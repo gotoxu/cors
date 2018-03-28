@@ -398,3 +398,13 @@ func TestSpec(t *testing.T) {
 		})
 	}
 }
+
+func TestIsMethodAllowedReturnsFalseWithNoMethods(t *testing.T) {
+	s := New(Options{})
+	assert.False(t, s.isMethodAllowed(http.MethodPut))
+}
+
+func TestIsMethodAllowedReturnsTrueWithOptions(t *testing.T) {
+	s := New(Options{})
+	assert.True(t, s.isMethodAllowed(http.MethodOptions))
+}
