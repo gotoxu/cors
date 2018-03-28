@@ -1,0 +1,19 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "CSPbwbyzqA6sfORicn4HFtIhF/c=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "8991bc29aa16c548c550c7ff78260e27b9ab7c73",
+			"revisionTime": "2018-02-21T22:46:20Z"
+		},
+		{
+			"checksumSHA1": "+WeL55OkClFbC33BU6RfLYrzBfA=",
+			"path": "github.com/ycyz/assert",
+			"revision": "3cea29c695e01b84862648a9a8bc7d15d47cc427",
+			"revisionTime": "2018-03-24T09:31:32Z"
+		}
+	],
+	"rootPath": "github.com/ycyz/cors"
+}
