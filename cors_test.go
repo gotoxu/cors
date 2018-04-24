@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ycyz/assert"
+	"github.com/gotuxu/assert"
 )
 
 var testHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

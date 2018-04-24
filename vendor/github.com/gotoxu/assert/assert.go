@@ -48,45 +48,90 @@ func (c cond) String() string {
 	return b.String()
 }
 
-// Empty 判断给定的集合是否为空
-func Empty(t Fataler, arr interface{}, a ...interface{}) {
-	v := reflect.ValueOf(arr)
-	if v.Kind() != reflect.Slice && v.Kind() != reflect.Array {
+// IsType 判断给定对象的类型是否和期望值相同
+func IsType(t Fataler, object interface{}, expected interface{}, a ...interface{}) {
+	if !reflect.DeepEqual(reflect.TypeOf(object), reflect.TypeOf(expected)) {
 		fatal(cond{
 			Fataler:    t,
-			Format:     "expected an array or slice, but got the: %s",
-			FormatArgs: []interface{}{v.Kind().String()},
-			Extra:      a,
-		})
-		return
-	}
-
-	if v.Len() != 0 {
-		fatal(cond{
-			Fataler:    t,
-			Format:     "expected an empty array, but got the: %s",
-			FormatArgs: []interface{}{tsdump(arr)},
+			Format:     "Object expected to be of type %v, but was %v",
+			FormatArgs: []interface{}{reflect.TypeOf(expected), reflect.TypeOf(object)},
 			Extra:      a,
 		})
 	}
 }
 
-// NotEmpty 判断给定的集合是否非空
-func NotEmpty(t Fataler, arr interface{}, a ...interface{}) {
-	v := reflect.ValueOf(arr)
-	if v.Kind() != reflect.Slice && v.Kind() != reflect.Array {
+// Len 判断指定的对象是否具有指定的长度
+func Len(t Fataler, object interface{}, length int, a ...interface{}) {
+	ok, l := getLen(object)
+	if !ok {
 		fatal(cond{
 			Fataler:    t,
-			Format:     "expected an array or slice, but got the: %s",
-			FormatArgs: []interface{}{v.Kind().String()},
+			Format:     `"%s" could not be applied builtin len()`,
+			FormatArgs: []interface{}{object},
 			Extra:      a,
 		})
 	}
 
-	if v.Len() == 0 {
+	if l != length {
+		fatal(cond{
+			Fataler:    t,
+			Format:     `"%s" should have %d item(s), but has %d`,
+			FormatArgs: []interface{}{object, length, l},
+			Extra:      a,
+		})
+	}
+}
+
+func getLen(x interface{}) (ok bool, length int) {
+	v := reflect.ValueOf(x)
+	defer func() {
+		if e := recover(); e != nil {
+			ok = false
+		}
+	}()
+
+	return true, v.Len()
+}
+
+// Empty 判断给定的对象v是否为空，v必须可作用于内建的len函数
+func Empty(t Fataler, v interface{}, a ...interface{}) {
+	ok, l := getLen(v)
+	if !ok {
+		fatal(cond{
+			Fataler:    t,
+			Format:     `"%s" could not be applied builtin len()`,
+			FormatArgs: []interface{}{v},
+			Extra:      a,
+		})
+		return
+	}
+
+	if l != 0 {
+		fatal(cond{
+			Fataler:    t,
+			Format:     "expected an empty object, but got the: %s",
+			FormatArgs: []interface{}{tsdump(v)},
+			Extra:      a,
+		})
+	}
+}
+
+// NotEmpty 判断给定的集合是否非空, v必须可以作用于内建的len函数
+func NotEmpty(t Fataler, v interface{}, a ...interface{}) {
+	ok, l := getLen(v)
+	if !ok {
+		fatal(cond{
+			Fataler:    t,
+			Format:     `"%s" could not be applied builtin len()`,
+			FormatArgs: []interface{}{v},
+			Extra:      a,
+		})
+	}
+
+	if l == 0 {
 		fatal(cond{
 			Fataler: t,
-			Format:  "expected an not empty array, but got an empty one.",
+			Format:  "expected an not empty object, but got an empty one.",
 			Extra:   a,
 		})
 	}
@@ -190,28 +235,39 @@ func Nil(t Fataler, v interface{}, a ...interface{}) {
 		sp = "\n"
 	}
 
-	if v != nil {
-		if _, ok := v.(error); ok {
-			fatal(cond{
-				Fataler:    t,
-				Format:     `unexpected error: %s`,
-				FormatArgs: []interface{}{v},
-				Extra:      a,
-			})
-		} else {
-			fatal(cond{
-				Fataler:    t,
-				Format:     "expected nil value but got:%s%s",
-				FormatArgs: []interface{}{sp, vs},
-				Extra:      a,
-			})
-		}
+	if v == nil {
+		return
+	}
+	if reflect.ValueOf(v).IsNil() {
+		return
+	}
+
+	if _, ok := v.(error); ok {
+		fatal(cond{
+			Fataler:    t,
+			Format:     `unexpected error: %s`,
+			FormatArgs: []interface{}{v},
+			Extra:      a,
+		})
+	} else {
+		fatal(cond{
+			Fataler:    t,
+			Format:     "expected nil value but got:%s%s",
+			FormatArgs: []interface{}{sp, vs},
+			Extra:      a,
+		})
 	}
 }
 
 // NotNil 判断 v 是否不等于 nil
 func NotNil(t Fataler, v interface{}, a ...interface{}) {
 	if v == nil {
+		fatal(cond{
+			Fataler: t,
+			Format:  "expected a value but got nil",
+			Extra:   a,
+		})
+	} else if reflect.ValueOf(v).IsNil() {
 		fatal(cond{
 			Fataler: t,
 			Format:  "expected a value but got nil",

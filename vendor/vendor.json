@@ -9,11 +9,11 @@
 			"revisionTime": "2018-02-21T22:46:20Z"
 		},
 		{
-			"checksumSHA1": "+WeL55OkClFbC33BU6RfLYrzBfA=",
-			"path": "github.com/ycyz/assert",
-			"revision": "3cea29c695e01b84862648a9a8bc7d15d47cc427",
-			"revisionTime": "2018-03-24T09:31:32Z"
+			"checksumSHA1": "TzCyWS9h+C1PqctR2Bp4GpwerA0=",
+			"path": "github.com/gotoxu/assert",
+			"revision": "14269c482f0950fe38a41b49c7884f41c4efcc6f",
+			"revisionTime": "2018-04-23T04:35:27Z"
 		}
 	],
-	"rootPath": "github.com/ycyz/cors"
+	"rootPath": "github.com/gotoxu/cors"
 }

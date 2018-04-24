@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ycyz/assert"
+	"github.com/gotuxu/assert"
 )
 
 func TestWildcard(t *testing.T) {
