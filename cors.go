@@ -129,6 +129,7 @@ func AllowAll() *Cors {
 		AllowedMethods:   []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"},
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
+		MaxAge:           86400,
 	})
 }
 
